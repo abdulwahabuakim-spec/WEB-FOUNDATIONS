@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnapShare - Day 7 Scaling to 10M</title>
+<style>
+body{font-family:Arial,system-ui; max-width:1000px; margin:auto; padding:20px; background:#f5f7fb; color:#1e293b}
+.card{background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,.08); margin-bottom:20px}
+h1{color:#b91c4a} h2{color:#0f3a6b}
+.badge{display:inline-block; background:#e0f2fe; padding:4px 10px; border-radius:20px; font-size:12px; margin:3px}
+img{width:100%; border-radius:8px; border:1px solid #ddd}
+.flow{border-left:4px solid #b91c4a; padding-left:12px; margin:12px 0; background:#fff7f8; padding:10px}
+table{width:100%; border-collapse:collapse} td,th{border:1px solid #ddd; padding:8px; font-size:14px}
+th{background:#0f3a6b; color:#fff}
+</style>
+</head>
+<body>
+
+<h1>Day 7: SnapShare Photo-Sharing App - Scaling to 10M Users</h1>
+
+<div class="card">
+<h2>Architecture Diagram</h2>
+<img src="architecture.png" alt="SnapShare Architecture">
+<p><b>1M DAU, 12 uploads/sec avg (58 peak), 579 feed views/sec avg (2894 peak), 748TB/year storage</b></p>
+</div>
+
+<div class="card">
+<h2>Quick Estimates (PLP Required)</h2>
+<table>
+<tr><th>Metric</th><th>Average</th><th>Peak (5x)</th></tr>
+<tr><td>Daily Active Users</td><td colspan="2">10M * 10% = <b>1,000,000 DAU</b></td></tr>
+<tr><td>Uploads / sec</td><td>1M/86400 = <b>11.6/sec</b></td><td><b>58/sec</b></td></tr>
+<tr><td>Feed Views / sec</td><td>50M/86400 = <b>579/sec</b></td><td><b>2894/sec</b></td></tr>
+<tr><td>Storage / day</td><td colspan="2">1M * (2MB + 50KB) = <b>2.05 TB/day</b></td></tr>
+<tr><td>Storage / year</td><td colspan="2"><b>748 TB/year (~0.75 PB/year)</b></td></tr>
+<tr><td>System Type</td><td colspan="2"><b>READ-HEAVY 50:1</b></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>Components - One Sentence Each</h2>
+<p><span class="badge">DNS</span> Resolves snapshare.com to CDN/LB IP in 0-20ms.</p>
+<p><span class="badge">CDN</span> Caches 2MB photos at edge, 40ms load vs 300ms origin, offloads 80% traffic.</p>
+<p><span class="badge">Load Balancer</span> Spreads 2894 req/sec to healthy stateless app servers.</p>
+<p><span class="badge">App Servers</span> Stateless API - any can handle any request, if one crashes no data lost.</p>
+<p><span class="badge">Redis Cache</span> Stores
